@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api import data
 
 app = FastAPI(
     title="UrbanHeat AI",
@@ -16,6 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(data.router, prefix="/api/data", tags=["Data"])
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to UrbanHeat AI API"}
@@ -23,3 +26,4 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
