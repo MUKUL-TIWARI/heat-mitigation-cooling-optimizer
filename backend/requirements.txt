@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+sqlalchemy
+psycopg2-binary
+geopandas
+rasterio
+shapely
+numpy
+pandas
+scikit-learn
+xgboost
+python-dotenv
+python-multipart
+httpx
