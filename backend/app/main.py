@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import data, analysis, model
+from app.api import data, analysis, model, planning
 
 app = FastAPI(
     title="UrbanHeat AI",
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(data.router, prefix="/api/data", tags=["Data"])
 app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
 app.include_router(model.router, prefix="/api/model", tags=["Model"])
+app.include_router(planning.router, prefix="/api/planning", tags=["Planning"])
 
 @app.get("/")
 def read_root():
