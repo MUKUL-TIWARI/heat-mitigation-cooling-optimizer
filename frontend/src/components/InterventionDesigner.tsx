@@ -11,10 +11,14 @@ const InterventionDesigner: React.FC<Props> = ({
   treeCanopy, setTreeCanopy, coolRoofs, setCoolRoofs, albedo, setAlbedo
 }) => {
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const [results, setResults] = useState<any>(null);
+  const [optResults, setOptResults] = useState<any>(null);
+  const [budget, setBudget] = useState<number>(10000000); // Default 1 Crore INR
 
   const handleSimulate = async () => {
     setIsSimulating(true);
+    setOptResults(null);
     try {
       const response = await fetch('http://localhost:8000/api/planning/simulate', {
         method: 'POST',
@@ -24,7 +28,7 @@ const InterventionDesigner: React.FC<Props> = ({
           tree_cover_change_pct: treeCanopy / 100,
           cool_roof_fraction: coolRoofs / 100,
           surface_albedo_change: albedo / 100,
-          budget_inr: 100000000
+          budget_inr: budget
         })
       });
       
@@ -42,6 +46,29 @@ const InterventionDesigner: React.FC<Props> = ({
       setResults({ tempReduction: 2.4, heatStressDrop: 34, cost: 7.3 });
     } finally {
       setIsSimulating(false);
+    }
+  };
+
+  const handleOptimize = async () => {
+    setIsOptimizing(true);
+    setResults(null);
+    try {
+      const response = await fetch('http://localhost:8000/api/planning/optimize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          budget_inr: budget,
+          objective: 'max_cooling'
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOptResults(data);
+      }
+    } catch (err) {
+      console.error("Optimization failed", err);
+    } finally {
+      setIsOptimizing(false);
     }
   };
 
@@ -67,34 +94,46 @@ const InterventionDesigner: React.FC<Props> = ({
         <div className="pt-4 border-t border-white/10">
           <div className="flex justify-between items-center mb-4">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-              <DollarSign size={14} /> Budget
+              <DollarSign size={14} /> Budget Constraints
             </span>
-            <span className="text-sm font-mono text-white">₹10 Cr</span>
+            <span className="text-sm font-mono text-white">₹{(budget / 10000000).toFixed(1)} Cr</span>
           </div>
           
-          <button 
-            onClick={handleSimulate}
-            className={`w-full py-4 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]
-              ${isSimulating ? 'bg-emerald-700 cursor-wait' : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:scale-[1.02] active:scale-[0.98]'}`}
-          >
-            {isSimulating ? (
-              <span className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Simulating Physics...
-              </span>
-            ) : (
-              <>
-                <CloudRain size={20} /> SIMULATE IMPACT
-              </>
-            )}
-          </button>
+          <input 
+            type="range" 
+            min="1000000" 
+            max="50000000" 
+            step="1000000"
+            value={budget} 
+            onChange={(e) => setBudget(Number(e.target.value))}
+            className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer mb-6"
+            style={{ accentColor: '#10b981' }}
+          />
+          
+          <div className="flex gap-2">
+            <button 
+              onClick={handleSimulate}
+              className={`w-1/2 py-3 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all border border-emerald-500/30
+                ${isSimulating ? 'bg-emerald-900/50 cursor-wait' : 'hover:bg-emerald-500/20 active:scale-[0.98]'}`}
+            >
+              {isSimulating ? '...' : 'SIMULATE'}
+            </button>
+            
+            <button 
+              onClick={handleOptimize}
+              className={`w-1/2 py-3 rounded-xl font-bold text-white flex justify-center items-center gap-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]
+                ${isOptimizing ? 'bg-emerald-700 cursor-wait' : 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:scale-[1.02] active:scale-[0.98]'}`}
+            >
+              {isOptimizing ? 'OPTIMIZING...' : 'OPTIMIZE'}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Results Panel */}
-      <div className={`pointer-events-auto w-full max-w-sm bg-black/60 backdrop-blur-xl border border-emerald-500/30 p-8 rounded-3xl shadow-2xl flex flex-col transition-all duration-500 ${results ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
+      <div className={`pointer-events-auto w-full max-w-sm bg-black/60 backdrop-blur-xl border border-emerald-500/30 p-8 rounded-3xl shadow-2xl flex flex-col transition-all duration-500 ${results || optResults ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
         <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-          <Target size={16} /> AI Optimization Result
+          <Target size={16} /> {optResults ? "Optimal Strategy" : "Simulation Result"}
         </h3>
         
         {results && (
@@ -116,6 +155,42 @@ const InterventionDesigner: React.FC<Props> = ({
                  <p className="text-xs text-slate-400 mb-1">Estimated Cost</p>
                  <p className="text-xl font-bold text-white">₹{results.cost} Cr</p>
                </div>
+             </div>
+          </div>
+        )}
+
+        {optResults && (
+          <div className="space-y-4">
+             <div>
+               <p className="text-sm text-slate-400 mb-1">Maximized Cooling</p>
+               <div className="flex items-baseline gap-2">
+                 <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">-{Math.abs(optResults.total_estimated_cooling_deg_c).toFixed(2)}</span>
+                 <span className="text-emerald-500 font-bold">°C</span>
+               </div>
+             </div>
+             
+             <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/10">
+               <div>
+                 <p className="text-xs text-slate-400 mb-1">Cost Used</p>
+                 <p className="text-lg font-bold text-white">₹{(optResults.total_cost_inr / 10000000).toFixed(1)} Cr</p>
+               </div>
+               <div>
+                 <p className="text-xs text-slate-400 mb-1">Area Affected</p>
+                 <p className="text-lg font-bold text-white">{optResults.affected_area_hectares.toFixed(1)} ha</p>
+               </div>
+             </div>
+
+             <div className="mt-4 pt-4 border-t border-white/10">
+               <p className="text-xs text-slate-400 mb-2">Strategy Highlights</p>
+               <ul className="text-sm text-white space-y-2">
+                 {optResults.strategy.slice(0, 3).map((s: any, idx: number) => (
+                   <li key={idx} className="flex justify-between">
+                     <span className="capitalize">{s.intervention_type.replace('_', ' ')}</span>
+                     <span className="text-emerald-400">-{Math.abs(s.estimated_cooling).toFixed(2)}°C</span>
+                   </li>
+                 ))}
+                 {optResults.strategy.length > 3 && <li className="text-slate-500 text-xs">+{optResults.strategy.length - 3} more interventions</li>}
+               </ul>
              </div>
           </div>
         )}
