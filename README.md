@@ -1,8 +1,21 @@
-# UrbanHeat AI
+# heat-mitigation-cooling-optimizer
 
 **Intelligent Urban Heat Hotspot Detection, Driver Analysis & Cooling Optimization Platform**
 
-UrbanHeat AI is a geospatial AI/ML-based system, backed with physics-informed decision making, to identify urban heat stress hotspots, quantify key drivers of urban heating, and generate optimized, scenario-based cooling interventions for mitigating urban heat impacts.
+heat-mitigation-cooling-optimizer is a physics-informed, geospatial AI/ML platform engineered as an interactive 3D urban digital twin. It identifies urban heat stress hotspots, quantifies key drivers of urban heating, and generates optimized, scenario-based cooling interventions for mitigating urban heat impacts.
+
+## Experience the 3D Digital Twin
+
+The frontend has been completely redesigned into a responsive, cinematic, scroll-driven 3D experience. As you scroll, the camera intelligently flies through the city to highlight thermal layers, explain urban drivers, and allow interactive scenario design.
+
+### Features
+
+- **Cinematic 3D Scroll Storytelling**: Built with MapLibre GL JS and GSAP ScrollTrigger for seamless spatial narrative.
+- **Heat Hotspot Detection**: Statistical identification of severe urban heat clusters with a custom 3D heat layer.
+- **AI Driver Attribution**: SHAP-based feature importance explaining why an area is hot.
+- **Cooling Scenario Lab**: An interactive Intervention Designer panel allowing you to simulate the effects of Tree Canopy, Cool Roofs, and Albedo modification on the fly.
+- **Real-Time Map Visualization**: Adjusting intervention parameters instantly updates the geospatial data layers to preview cooling impacts.
+- **Demo Mode**: Built-in mock models for immediate demonstration when backend models aren't active.
 
 ## Architecture
 
@@ -19,33 +32,16 @@ UrbanHeat AI is a geospatial AI/ML-based system, backed with physics-informed de
       |                                                 |
       +------------------------+------------------------+
                                |
-                        HEAT PREDICTION
+                HEAT PREDICTION & INTERVENTION
                                |
-                        DRIVER ANALYSIS
-                               |
-                     COUNTERFACTUAL ENGINE
-                               |
-                     INTERVENTION SCENARIOS
-                               |
-                          OPTIMIZATION
-                               |
-                    RECOMMENDED COOLING PLAN
+           CINEMATIC 3D DIGITAL TWIN (FRONTEND)
 ```
-
-## Features
-
-- **Heat Hotspot Detection**: Statistical identification of severe urban heat clusters.
-- **AI Driver Attribution**: SHAP-based feature importance explaining why an area is hot.
-- **Physics-Informed ML**: Constraints to ensure counterfactual predictions align with physical realities.
-- **Cooling Scenario Lab**: Simulate the effects of Tree Planting, Cool Roofs, and Albedo modification.
-- **Spatial Optimization**: Greedy optimization to maximize cooling under a specified budget.
-- **Demo Mode**: Built-in synthetic dataset generator for immediate demonstration.
 
 ## Scientific Methodology
 
 1. **Observations**: Captures surface temperature (LST) and urban features (NDVI, NDBI, Albedo).
 2. **Modeling**: An XGBoost model predicts LST based on urban morphology and meteorology.
-3. **Physics constraints**: Expected cooling (e.g. from increased vegetation) is governed by physical heuristics to prevent ML extrapolation errors.
+3. **Physics constraints**: Expected cooling (e.g., from increased vegetation) is governed by physical heuristics to prevent ML extrapolation errors.
 4. **Counterfactuals**: Estimates ∆LST for interventions.
 5. **Optimization**: Targets the highest vulnerability zones with the most cost-effective interventions.
 
@@ -75,11 +71,7 @@ cd frontend
 npm install
 npm run dev
 ```
-The dashboard will be available at `http://localhost:5173`.
-
-## Demo Mode
-
-The application operates in Demo Mode by default if external datasets are missing. It generates a synthetic 400-cell urban grid with realistic environmental correlations (e.g., higher built-up density correlates with higher LST).
+The 3D dashboard will be available at `http://localhost:5173`.
 
 ## Environment Variables
 
@@ -87,5 +79,5 @@ Copy `.env.example` to `.env` and fill in API keys if connecting to live dataset
 
 ## Limitations & Future Work
 
-- **Limitations**: The demo uses random-seed synthetic data. True physical constraints require complex energy-balance models. Intervention costs are mock estimations.
-- **Future Work**: Connect to Google Earth Engine API, implement graph neural networks for spatial dependencies, and incorporate high-res population vulnerability data.
+- **Limitations**: The demo mode uses static representations of scientific calculations. True physical constraints require complex energy-balance models. Intervention costs are mock estimations.
+- **Future Work**: Connect the 3D Intervention Designer directly to the backend Python Optimizer to stream real Pareto frontiers for budget analysis.

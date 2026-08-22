@@ -34,7 +34,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-rose-400 to-orange-300 tracking-tight">
-                UrbanHeat AI
+                heat-mitigation-cooling-optimizer
               </h1>
               <p className="text-sm text-slate-400 font-medium tracking-wide">Intelligent Cooling Optimization Platform</p>
             </div>
