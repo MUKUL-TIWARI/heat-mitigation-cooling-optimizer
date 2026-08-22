@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import CityDigitalTwin from './components/CityDigitalTwin';
+import InterventionDesigner from './components/InterventionDesigner';
 import { ThermometerSun, ChevronDown } from 'lucide-react';
 
 function App() {
   const [activeTab] = useState('heatmap');
+  
+  // Intervention State
+  const [treeCanopy, setTreeCanopy] = useState(30);
+  const [coolRoofs, setCoolRoofs] = useState(45);
+  const [albedo, setAlbedo] = useState(30);
   
   return (
     <div className="relative w-full bg-neutral-950 text-slate-200 font-sans">
@@ -13,6 +19,7 @@ function App() {
         <CityDigitalTwin 
           activeTab={activeTab} 
           onCellSelect={() => {}}
+          interventionLevel={(treeCanopy + coolRoofs + albedo) / 100}
         />
       </div>
 
@@ -89,7 +96,13 @@ function App() {
 
         {/* SCENE 04: ACTION SPACE */}
         <section id="scene-action" className="h-[150vh] w-full relative pointer-events-none">
-           {/* To be implemented in Unit 4 */}
+           <div className="sticky top-0 h-screen w-full">
+             <InterventionDesigner 
+               treeCanopy={treeCanopy} setTreeCanopy={setTreeCanopy}
+               coolRoofs={coolRoofs} setCoolRoofs={setCoolRoofs}
+               albedo={albedo} setAlbedo={setAlbedo}
+             />
+           </div>
         </section>
 
       </div>

@@ -67,6 +67,33 @@ const StoryController: React.FC = () => {
       }
     });
 
+    // Scene 4: ACTION (Pan to a specific area for intervention)
+    ScrollTrigger.create({
+      trigger: '#scene-action',
+      start: 'top center',
+      end: 'bottom center',
+      onEnter: () => {
+        mapInstance.flyTo({
+          center: [77.22, 28.58],
+          zoom: 16,
+          pitch: 75,
+          bearing: 90,
+          duration: 3500,
+          essential: true
+        });
+      },
+      onEnterBack: () => {
+        mapInstance.flyTo({
+          center: [77.22, 28.58],
+          zoom: 16,
+          pitch: 75,
+          bearing: 90,
+          duration: 3500,
+          essential: true
+        });
+      }
+    });
+
     // Scene 1 (Hero) reset
     ScrollTrigger.create({
       trigger: 'header',

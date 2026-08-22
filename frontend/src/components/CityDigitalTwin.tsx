@@ -7,9 +7,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 interface CityDigitalTwinProps {
   activeTab: string;
   onCellSelect: (cell: any) => void;
+  interventionLevel?: number;
 }
 
-const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect }) => {
+const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interventionLevel = 1 }) => {
   const [geoData, setGeoData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +54,7 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect }) => {
         25, 'rgb(0, 0, 255)',
         45, 'rgb(255, 0, 0)'
       ],
-      'fill-opacity': 0.6
+      'fill-opacity': Math.max(0, 0.6 - (interventionLevel * 0.2))
     }
   };
 
