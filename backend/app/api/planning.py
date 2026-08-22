@@ -8,13 +8,14 @@ from app.optimization.scenario import InterventionEngine
 from app.optimization.optimizer import SpatialOptimizer, CostModel
 from app.physics.engine import PhysicsEngine
 from app.ml.model import HeatPredictor
-from app.data.demo import DemoDataGenerator
+from app.data.demo import DemoSatelliteProvider
 from app.geospatial.hotspots import HeatHotspotDetector
 
 router = APIRouter()
 
 # Initialize modules
-generator = DemoDataGenerator(seed=42)
+# Initialize modules
+generator = DemoSatelliteProvider(seed=42)
 hotspot_detector = HeatHotspotDetector()
 predictor = HeatPredictor(model_type='xgboost')
 physics = PhysicsEngine()

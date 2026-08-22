@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any
 import geopandas as gpd
 
-class DataSource(ABC):
-    """Base interface for all data sources."""
+class SatelliteProvider(ABC):
+    """Base interface for all satellite data sources."""
 
     @abstractmethod
     def fetch(self, bbox: tuple[float, float, float, float], **kwargs) -> Any:
@@ -29,11 +29,11 @@ class DataIngestionPipeline:
     """Manages data fetching from multiple sources and merging."""
     
     def __init__(self):
-        self.sources: Dict[str, DataSource] = {}
+        self.providers: Dict[str, SatelliteProvider] = {}
 
-    def register_source(self, name: str, source: DataSource):
-        self.sources[name] = source
+    def register_provider(self, name: str, provider: SatelliteProvider):
+        self.providers[name] = provider
 
-    def run(self, bbox: tuple[float, float, float, float]) -> gpd.GeoDataFrame:
+    def run(self, geojson_aoi: Dict[str, Any]) -> gpd.GeoDataFrame:
         # Implementation for real data merging will go here
         pass

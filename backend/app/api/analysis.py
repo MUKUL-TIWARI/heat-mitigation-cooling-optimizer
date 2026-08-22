@@ -1,20 +1,30 @@
 from fastapi import APIRouter
-from typing import Dict, Any
-from app.data.demo import DemoDataGenerator
+from pydantic import BaseModel
+from typing import Dict, Any, Optional
+from app.data.demo import DemoSatelliteProvider
 from app.geospatial.hotspots import HeatHotspotDetector
 from app.geospatial.features import FeatureEngineer
 import json
 
 router = APIRouter()
-generator = DemoDataGenerator()
+generator = DemoSatelliteProvider()
 hotspot_detector = HeatHotspotDetector()
 feature_engineer = FeatureEngineer()
 
+class AOIRequest(BaseModel):
+    geojson: Optional[Dict[str, Any]] = None
+    rows: int = 20
+    cols: int = 20
+
 @router.post("/process/demo")
-def process_demo_data(rows: int = 20, cols: int = 20) -> Dict[str, Any]:
-    """Generates and processes demo data, returning engineered features and hotspots."""
-    # 1. Generate Demo Data
-    gdf = generator.generate_city_grid(rows=rows, cols=cols)
+def process_demo_data(request: AOIRequest) -> Dict[str, Any]:
+    """Generates and processes demo data based on an AOI."""
+    # 1. Generate Demo Data within AOI
+    gdf = generator.generate_city_grid(
+        geojson_aoi=request.geojson, 
+        rows=request.rows, 
+        cols=request.cols
+    )
     
     # 2. Hotspot Detection
     gdf = hotspot_detector.detect(gdf)

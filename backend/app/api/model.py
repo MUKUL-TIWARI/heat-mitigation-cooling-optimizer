@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
 from app.ml.model import HeatPredictor
-from app.data.demo import DemoDataGenerator
+from app.data.demo import DemoSatelliteProvider
 import pandas as pd
 
 router = APIRouter()
@@ -11,7 +11,8 @@ predictor = HeatPredictor(model_type='xgboost')
 def train_model() -> Dict[str, Any]:
     """Train the ML model on demo data."""
     # For demo, generate a dataset to train on
-    generator = DemoDataGenerator(seed=100)
+    # For demo, generate a dataset to train on
+    generator = DemoSatelliteProvider(seed=100)
     gdf = generator.generate_city_grid(rows=30, cols=30)
     df = pd.DataFrame(gdf.drop(columns=['geometry']))
     

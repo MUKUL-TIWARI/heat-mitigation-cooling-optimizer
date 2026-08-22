@@ -3,21 +3,44 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 import uuid
 
-class DemoDataGenerator:
+from typing import Any, Dict
+from app.data.base import SatelliteProvider
+
+class DemoSatelliteProvider(SatelliteProvider):
     """Generates synthetic geospatial data for the Demo City."""
 
     def __init__(self, seed: int = 42):
         self.seed = seed
         np.random.seed(self.seed)
 
+    def fetch(self, bbox: tuple[float, float, float, float], **kwargs) -> Any:
+        pass
+        
+    def validate(self, data: Any) -> bool:
+        return True
+        
+    def preprocess(self, data: Any) -> Any:
+        return data
+
+    def transform(self, data: Any, target_crs: str = "EPSG:4326") -> gpd.GeoDataFrame:
+        pass
+
     def generate_city_grid(self, 
+                           geojson_aoi: Dict[str, Any] = None,
                            bbox: tuple[float, float, float, float] = (77.1, 28.5, 77.3, 28.7),
                            rows: int = 20, 
                            cols: int = 20) -> gpd.GeoDataFrame:
         """
         Generate a synthetic city grid with correlated environmental variables.
-        bbox format: (min_lon, min_lat, max_lon, max_lat)
+        If geojson_aoi is provided, it extracts the bounding box from it.
         """
+        if geojson_aoi and "geometry" in geojson_aoi:
+            # Extract bbox from geojson polygon
+            coords = np.array(geojson_aoi["geometry"]["coordinates"][0])
+            minx, miny = coords.min(axis=0)
+            maxx, maxy = coords.max(axis=0)
+            bbox = (minx, miny, maxx, maxy)
+
         minx, miny, maxx, maxy = bbox
         width = (maxx - minx) / cols
         height = (maxy - miny) / rows
@@ -115,7 +138,7 @@ class DemoDataGenerator:
         return gdf
 
 if __name__ == "__main__":
-    generator = DemoDataGenerator()
+    generator = DemoSatelliteProvider()
     gdf = generator.generate_city_grid()
     print(f"Generated {len(gdf)} synthetic grid cells.")
     print(gdf.head())

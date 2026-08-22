@@ -1,10 +1,11 @@
 from fastapi import APIRouter
 from typing import Dict, Any
-from app.data.demo import DemoDataGenerator
+from app.data.demo import DemoSatelliteProvider
 import json
 
 router = APIRouter()
-generator = DemoDataGenerator()
+router = APIRouter()
+generator = DemoSatelliteProvider()
 
 @router.post("/ingest/demo")
 def generate_demo_data(rows: int = 20, cols: int = 20) -> Dict[str, Any]:
