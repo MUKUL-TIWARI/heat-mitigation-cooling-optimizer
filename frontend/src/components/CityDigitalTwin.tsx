@@ -19,8 +19,7 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interve
     const fetchDemoData = async () => {
       try {
         setLoading(true);
-        // We will call the actual endpoint when the backend is running.
-        const response = await fetch('http://localhost:8000/api/analysis/process/demo', {
+        const response = await fetch('http://localhost:8000/api/analysis/process', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
