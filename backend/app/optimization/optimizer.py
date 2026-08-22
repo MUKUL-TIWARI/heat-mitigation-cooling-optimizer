@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from app.schemas.optimization import OptimizationRequest, OptimizationResult, InterventionAction
+from app.physics.engine import PhysicsEngine
 
 class CostModel:
     def __init__(self):
@@ -17,6 +18,7 @@ class SpatialOptimizer:
     
     def __init__(self, cost_model: CostModel):
         self.cost_model = cost_model
+        self.physics = PhysicsEngine()
 
     def optimize(self, gdf: pd.DataFrame, request: OptimizationRequest) -> OptimizationResult:
         """
@@ -50,14 +52,16 @@ class SpatialOptimizer:
             # Evaluate potential (mock logic for demo: trees work best if low veg, cool roof if high built_up)
             options = []
             
-            # Option 1: Trees
+            # Option 1: Trees (simulate adding 40% vegetation to the cell)
             if row.get('vegetation_fraction', 0.5) < 0.4 and budget_remaining >= self.cost_model.costs['tree_planting'] * cell_area_ha:
-                cooling = 1.2 # °C (mock estimation)
+                # Use physics engine to estimate cooling of +40% vegetation
+                cooling = abs(0.4 * self.physics.sensitivities.get('vegetation_fraction', -4.0)) 
                 options.append(('tree_planting', self.cost_model.costs['tree_planting'] * cell_area_ha, cooling))
                 
-            # Option 2: Cool roofs
+            # Option 2: Cool roofs (simulate converting 50% built up to high albedo)
             if row.get('built_up_fraction', 0.5) > 0.6 and budget_remaining >= self.cost_model.costs['cool_roof'] * cell_area_ha:
-                cooling = 0.8 # °C
+                # Use physics engine to estimate cooling of +50% albedo
+                cooling = abs(0.5 * self.physics.sensitivities.get('albedo', -8.0))
                 options.append(('cool_roof', self.cost_model.costs['cool_roof'] * cell_area_ha, cooling))
                 
             if not options:
@@ -83,13 +87,16 @@ class SpatialOptimizer:
 
         # Average cooling across affected area
         avg_cooling = (total_cooling / len(strategy)) if strategy else 0.0
+        
+        # Calculate population exposure reduced dynamically
+        pop_reduced = (len(strategy) / len(candidates) * 100) if len(candidates) > 0 else 0.0
 
         return OptimizationResult(
             strategy=strategy,
             total_estimated_cooling_deg_c=avg_cooling,
             total_cost_inr=request.budget_inr - budget_remaining,
             affected_area_hectares=affected_area,
-            population_exposure_reduced_pct=15.5 if strategy else 0.0, # Mock value
+            population_exposure_reduced_pct=pop_reduced,
             confidence_interval=[avg_cooling - 0.2, avg_cooling + 0.2],
-            reasoning="Greedy optimization selected highly vulnerable zones and applied the most cost-effective interventions (trees for low vegetation, cool roofs for dense built-up)."
+            reasoning="Greedy optimization selected highly vulnerable zones and applied the most cost-effective interventions based on physics engine cooling estimates."
         )
