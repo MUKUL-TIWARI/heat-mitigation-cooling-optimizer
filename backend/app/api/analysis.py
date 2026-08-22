@@ -7,6 +7,8 @@ from app.data.offline import OfflineStaticProvider
 from app.data.base import DataIngestionPipeline
 from app.geospatial.hotspots import HeatHotspotDetector
 from app.geospatial.features import FeatureEngineer
+from app.ml.model import HeatPredictor
+import pandas as pd
 import json
 import os
 
@@ -53,12 +55,19 @@ def process_live_data(request: AOIRequest) -> Dict[str, Any]:
         if col not in gdf.columns:
             gdf[col] = df_engineered[col]
             
+    # 4. Train Predictor & Get SHAP Drivers
+    predictor = HeatPredictor(model_type='xgboost')
+    df_train = pd.DataFrame(gdf.drop(columns=['geometry', 'data_source'], errors='ignore'))
+    predictor.train(df_train, target='lst')
+    drivers = predictor.get_global_importance(df_train)
+            
     geojson_data = json.loads(gdf.to_json())
     
     return {
         "status": "success",
         "provider": raw_data.get("source", "UNKNOWN"),
         "stats": summary_stats,
+        "drivers": drivers,
         "data": geojson_data
     }
 

@@ -5,6 +5,7 @@ import { ThermometerSun, ChevronDown } from 'lucide-react';
 
 function App() {
   const [activeTab] = useState('heatmap');
+  const [analysisData, setAnalysisData] = useState<any>(null);
   
   // Intervention State
   const [treeCanopy, setTreeCanopy] = useState(30);
@@ -14,12 +15,12 @@ function App() {
   return (
     <div className="relative w-full bg-neutral-950 text-slate-200 font-sans">
       
-      {/* 3D Map Background (Fixed) */}
       <div className="fixed inset-0 z-0">
         <CityDigitalTwin 
           activeTab={activeTab} 
           onCellSelect={() => {}}
           interventionLevel={(treeCanopy + coolRoofs + albedo) / 100}
+          onDataLoaded={setAnalysisData}
         />
       </div>
 
@@ -86,11 +87,35 @@ function App() {
 
         {/* SCENE 03: DRIVERS */}
         <section id="scene-drivers" className="h-screen w-full flex flex-col justify-center items-end text-right px-8 md:px-24 relative bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
-          <div className="max-w-xl space-y-4 bg-black/40 p-8 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl pointer-events-auto">
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Understand the Why</h2>
-            <p className="text-lg text-slate-300 font-light">
-              It’s not just about knowing where it’s hot. We attribute heat to specific urban drivers like low vegetation, high albedo, and dense built-up areas.
-            </p>
+          <div className="max-w-xl space-y-6 bg-black/40 p-8 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl pointer-events-auto">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Understand the Why</h2>
+              <p className="text-lg text-slate-300 font-light mt-4">
+                We use SHAP to attribute heat to specific urban drivers. Here is the AI's explanation for the current area.
+              </p>
+            </div>
+            
+            {analysisData?.drivers && (
+              <div className="space-y-4 pt-4 border-t border-white/10">
+                <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-widest text-left">Top Thermal Drivers</h3>
+                <div className="space-y-3">
+                  {Object.entries(analysisData.drivers).slice(0, 4).map(([feature, pct]: any) => (
+                    <div key={feature} className="w-full">
+                      <div className="flex justify-between text-xs font-bold text-slate-300 mb-1">
+                        <span className="capitalize">{feature.replace('_', ' ')}</span>
+                        <span>{pct.toFixed(1)}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-orange-500 to-rose-500" 
+                          style={{ width: `${pct}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

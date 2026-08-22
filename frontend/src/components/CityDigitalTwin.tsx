@@ -8,9 +8,10 @@ interface CityDigitalTwinProps {
   activeTab: string;
   onCellSelect: (cell: any) => void;
   interventionLevel?: number;
+  onDataLoaded?: (data: any) => void;
 }
 
-const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interventionLevel = 1 }) => {
+const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interventionLevel = 1, onDataLoaded }) => {
   const [geoData, setGeoData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +33,9 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interve
         if (response.ok) {
            const result = await response.json();
            setGeoData(result.data);
+           if (onDataLoaded) {
+             onDataLoaded({ stats: result.stats, drivers: result.drivers });
+           }
         } else {
            console.log("Backend not running yet, using dummy data");
            setGeoData(null);
