@@ -3,17 +3,16 @@ import CityDigitalTwin from './components/CityDigitalTwin';
 import { ThermometerSun, ChevronDown } from 'lucide-react';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('heatmap');
-  const [selectedCell, setSelectedCell] = useState<any>(null);
+  const [activeTab] = useState('heatmap');
   
   return (
-    <div className="relative w-full h-[300vh] bg-neutral-950 text-slate-200 font-sans">
+    <div className="relative w-full bg-neutral-950 text-slate-200 font-sans">
       
       {/* 3D Map Background (Fixed) */}
       <div className="fixed inset-0 z-0">
         <CityDigitalTwin 
           activeTab={activeTab} 
-          onCellSelect={setSelectedCell}
+          onCellSelect={() => {}}
         />
       </div>
 
@@ -66,6 +65,31 @@ function App() {
             <span className="text-xs font-bold tracking-widest uppercase text-white drop-shadow-md">Scroll to begin</span>
             <ChevronDown className="text-white drop-shadow-md" size={24} />
           </div>
+        </section>
+
+        {/* SCENE 02: HEAT */}
+        <section id="scene-heat" className="h-screen w-full flex flex-col justify-center items-start text-left px-8 md:px-24 relative bg-gradient-to-t from-black/60 to-transparent">
+          <div className="max-w-xl space-y-4 bg-black/40 p-8 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
+            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Feel the Heat</h2>
+            <p className="text-lg text-slate-300 font-light">
+              Our physics-informed ML model predicts Land Surface Temperature (LST) and identifies severe thermal hotspots down to a 100m resolution.
+            </p>
+          </div>
+        </section>
+
+        {/* SCENE 03: DRIVERS */}
+        <section id="scene-drivers" className="h-screen w-full flex flex-col justify-center items-end text-right px-8 md:px-24 relative bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+          <div className="max-w-xl space-y-4 bg-black/40 p-8 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl pointer-events-auto">
+            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Understand the Why</h2>
+            <p className="text-lg text-slate-300 font-light">
+              It’s not just about knowing where it’s hot. We attribute heat to specific urban drivers like low vegetation, high albedo, and dense built-up areas.
+            </p>
+          </div>
+        </section>
+
+        {/* SCENE 04: ACTION SPACE */}
+        <section id="scene-action" className="h-[150vh] w-full relative pointer-events-none">
+           {/* To be implemented in Unit 4 */}
         </section>
 
       </div>

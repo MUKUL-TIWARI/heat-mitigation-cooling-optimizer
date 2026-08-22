@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Map, { Source, Layer } from 'react-map-gl';
+import Map, { Source, Layer, MapProvider } from 'react-map-gl';
+import StoryController from './StoryController';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -57,8 +58,11 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect }) => {
   };
 
   return (
-    <div className="w-full h-full bg-neutral-900 relative">
+    <MapProvider>
+      <div className="w-full h-full bg-neutral-900 relative">
+        <StoryController />
       <Map
+        id="main-map"
         style={{ width: '100%', height: '100%' }}
         initialViewState={{
           longitude: 77.2,
@@ -90,8 +94,9 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect }) => {
              <p className="text-rose-400 font-medium">Generating Urban Heat Data...</p>
            </div>
         </div>
-      )}
-    </div>
+        )}
+      </div>
+    </MapProvider>
   );
 };
 
