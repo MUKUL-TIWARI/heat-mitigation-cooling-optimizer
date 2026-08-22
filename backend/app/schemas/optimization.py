@@ -5,6 +5,7 @@ class OptimizationRequest(BaseModel):
     budget_inr: float
     objective: str = 'max_cooling' # max_cooling or max_population_protected
     target_area: Optional[str] = None
+    bbox: Optional[list[float]] = None
     
 class InterventionAction(BaseModel):
     zone_id: str

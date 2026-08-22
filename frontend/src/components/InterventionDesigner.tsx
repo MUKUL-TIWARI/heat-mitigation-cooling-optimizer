@@ -5,10 +5,11 @@ interface Props {
   treeCanopy: number; setTreeCanopy: (v: number) => void;
   coolRoofs: number; setCoolRoofs: (v: number) => void;
   albedo: number; setAlbedo: (v: number) => void;
+  bbox?: [number, number, number, number] | null;
 }
 
 const InterventionDesigner: React.FC<Props> = ({
-  treeCanopy, setTreeCanopy, coolRoofs, setCoolRoofs, albedo, setAlbedo
+  treeCanopy, setTreeCanopy, coolRoofs, setCoolRoofs, albedo, setAlbedo, bbox
 }) => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -28,7 +29,8 @@ const InterventionDesigner: React.FC<Props> = ({
           tree_cover_change_pct: treeCanopy / 100,
           cool_roof_fraction: coolRoofs / 100,
           surface_albedo_change: albedo / 100,
-          budget_inr: budget
+          budget_inr: budget,
+          bbox: bbox
         })
       });
       
@@ -58,7 +60,8 @@ const InterventionDesigner: React.FC<Props> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           budget_inr: budget,
-          objective: 'max_cooling'
+          objective: 'max_cooling',
+          bbox: bbox
         })
       });
       if (response.ok) {

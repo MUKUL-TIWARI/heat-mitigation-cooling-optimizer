@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import CityDigitalTwin from './components/CityDigitalTwin';
 import InterventionDesigner from './components/InterventionDesigner';
+import SearchBar from './components/SearchBar';
 import { ThermometerSun, ChevronDown } from 'lucide-react';
 
 function App() {
   const [activeTab] = useState('heatmap');
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [currentBbox, setCurrentBbox] = useState<[number, number, number, number] | null>(null);
+  const [locationName, setLocationName] = useState<string>("Demo Mode Active");
   
   // Intervention State
   const [treeCanopy, setTreeCanopy] = useState(30);
@@ -21,8 +24,14 @@ function App() {
           onCellSelect={() => {}}
           interventionLevel={(treeCanopy + coolRoofs + albedo) / 100}
           onDataLoaded={setAnalysisData}
+          bbox={currentBbox}
         />
       </div>
+
+      <SearchBar onLocationSelect={(bbox, name) => {
+        setCurrentBbox(bbox);
+        setLocationName(name);
+      }} />
 
       {/* Cinematic Overlays (Scrollable) */}
       <div className="relative z-10 w-full h-full pointer-events-none">
@@ -46,7 +55,7 @@ function App() {
                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
              </span>
-             <span className="text-xs font-bold text-emerald-400 tracking-widest uppercase">Demo Mode Active</span>
+             <span className="text-xs font-bold text-emerald-400 tracking-widest uppercase truncate max-w-[200px]">{locationName}</span>
           </div>
         </header>
 
@@ -126,6 +135,7 @@ function App() {
                treeCanopy={treeCanopy} setTreeCanopy={setTreeCanopy}
                coolRoofs={coolRoofs} setCoolRoofs={setCoolRoofs}
                albedo={albedo} setAlbedo={setAlbedo}
+               bbox={currentBbox}
              />
            </div>
         </section>

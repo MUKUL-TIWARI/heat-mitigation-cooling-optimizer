@@ -9,10 +9,12 @@ interface CityDigitalTwinProps {
   onCellSelect: (cell: any) => void;
   interventionLevel?: number;
   onDataLoaded?: (data: any) => void;
+  bbox?: [number, number, number, number] | null;
 }
 
-const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interventionLevel = 1, onDataLoaded }) => {
+const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interventionLevel = 1, onDataLoaded, bbox }) => {
   const [geoData, setGeoData] = useState<any>(null);
+  const mapRef = React.useRef<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +29,8 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interve
           },
           body: JSON.stringify({
             rows: 20,
-            cols: 20
+            cols: 20,
+            bbox: bbox
           })
         });
         if (response.ok) {
@@ -48,7 +51,15 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interve
     };
     
     fetchDemoData();
-  }, []);
+
+    if (bbox && mapRef.current) {
+      const map = mapRef.current.getMap();
+      map.fitBounds(
+        [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+        { padding: 50, duration: 2000 }
+      );
+    }
+  }, [bbox]);
 
   // CARTO Dark Matter style for MapLibre
   const mapStyle = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
@@ -73,6 +84,7 @@ const CityDigitalTwin: React.FC<CityDigitalTwinProps> = ({ onCellSelect, interve
       <div className="w-full h-full bg-neutral-900 relative">
         <StoryController />
       <Map
+        ref={mapRef}
         id="main-map"
         style={{ width: '100%', height: '100%' }}
         initialViewState={{

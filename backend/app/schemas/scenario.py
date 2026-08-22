@@ -10,3 +10,4 @@ class Scenario(BaseModel):
     water_area_change_pct: float = 0.0      # Increase in water fraction
     budget_inr: Optional[float] = None
     target_area_id: Optional[str] = None
+    bbox: Optional[list[float]] = None

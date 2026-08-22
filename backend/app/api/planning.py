@@ -23,9 +23,10 @@ physics = PhysicsEngine()
 intervention_engine = InterventionEngine(ml_predictor=predictor, physics_engine=physics)
 optimizer = SpatialOptimizer(cost_model=CostModel())
 
-def get_current_baseline():
+def get_current_baseline(bbox=None):
     provider = get_active_provider()
-    bbox = (77.1, 28.5, 77.3, 28.7)
+    if bbox is None:
+        bbox = (77.1, 28.5, 77.3, 28.7)
     raw_data = provider.fetch(bbox=bbox)
     gdf = provider.transform(raw_data)
     gdf = hotspot_detector.detect(gdf)
@@ -39,7 +40,8 @@ def get_current_baseline():
 def simulate_scenario(scenario: Scenario) -> Dict[str, Any]:
     """Simulates a cooling intervention scenario."""
     # Simulate
-    gdf_baseline = get_current_baseline()
+    bbox = tuple(scenario.bbox) if scenario.bbox else None
+    gdf_baseline = get_current_baseline(bbox)
     df_baseline = pd.DataFrame(gdf_baseline.drop(columns=['geometry']))
     
     # Train the predictor on the current baseline (normally would use a pre-trained model)
@@ -65,7 +67,8 @@ def simulate_scenario(scenario: Scenario) -> Dict[str, Any]:
 @router.post("/optimize", response_model=OptimizationResult)
 def optimize_interventions(request: OptimizationRequest) -> OptimizationResult:
     """Run spatial optimization for cooling interventions."""
-    gdf_baseline = get_current_baseline()
+    bbox = tuple(request.bbox) if request.bbox else None
+    gdf_baseline = get_current_baseline(bbox)
     df_baseline = pd.DataFrame(gdf_baseline.drop(columns=['geometry']))
     predictor.train(df_baseline, target='lst')
     

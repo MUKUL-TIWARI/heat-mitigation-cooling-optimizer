@@ -19,6 +19,7 @@ feature_engineer = FeatureEngineer()
 
 class AOIRequest(BaseModel):
     geojson: Optional[Dict[str, Any]] = None
+    bbox: Optional[list[float]] = None
     rows: int = 20
     cols: int = 20
 
@@ -32,9 +33,11 @@ def process_live_data(request: AOIRequest) -> Dict[str, Any]:
     """Generates and processes live or fallback data based on an AOI."""
     provider = get_active_provider()
     
-    # Extract bbox from geojson if available
+    # Extract bbox from request or geojson if available
     bbox = (77.1, 28.5, 77.3, 28.7)
-    if request.geojson and "geometry" in request.geojson:
+    if request.bbox and len(request.bbox) == 4:
+        bbox = tuple(request.bbox)
+    elif request.geojson and "geometry" in request.geojson:
         import numpy as np
         coords = np.array(request.geojson["geometry"]["coordinates"][0])
         minx, miny = coords.min(axis=0)
