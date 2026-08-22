@@ -1,5 +1,5 @@
 import React from 'react';
-import { Target, TrendingUp, Cpu, Leaf } from 'lucide-react';
+import { Target, TrendingUp, Cpu } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 interface RightPanelProps {
@@ -100,7 +100,7 @@ const DriverBar = ({ label, value, max, color }: {label: string, value: number, 
         <span className="text-slate-400 font-mono">{value?.toFixed(2)}</span>
       </div>
       <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-        <div className={`h-full ${color}`} style={{ width: \`\${pct}%\` }}></div>
+        <div className={`h-full ${color}`} style={{ width: `${pct}%` }}></div>
       </div>
     </div>
   )

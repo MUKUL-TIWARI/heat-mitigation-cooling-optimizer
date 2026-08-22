@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, Layers, Activity, TreePine, Home, Wind } from 'lucide-react';
+import { Map, Layers, Activity, TreePine } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;

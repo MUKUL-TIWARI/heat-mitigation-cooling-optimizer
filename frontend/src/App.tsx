@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
-import MapComponent from './components/MapComponent';
+import CityDigitalTwin from './components/CityDigitalTwin';
 import RightPanel from './components/RightPanel';
 import BottomPanel from './components/BottomPanel';
-import { Layers, ThermometerSun, Leaf, Droplets } from 'lucide-react';
+import { ThermometerSun } from 'lucide-react';
 
 function App() {
   const [activeTab, setActiveTab] = useState('heatmap');
@@ -43,7 +43,7 @@ function App() {
 
         {/* MAP CONTAINER (CENTER) */}
         <div className="flex-1 relative">
-          <MapComponent 
+          <CityDigitalTwin 
             activeTab={activeTab} 
             onCellSelect={setSelectedCell}
           />

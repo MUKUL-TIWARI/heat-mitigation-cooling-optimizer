@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { BarChart3, Sliders, DollarSign, CloudRain } from 'lucide-react';
+import { Sliders, DollarSign, CloudRain } from 'lucide-react';
 
 interface BottomPanelProps {
   selectedCell: any;
 }
 
-const BottomPanel: React.FC<BottomPanelProps> = ({ selectedCell }) => {
+const BottomPanel: React.FC<BottomPanelProps> = () => {
   const [expanded, setExpanded] = useState(false);
 
   return (
